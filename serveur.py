@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 import sqlite3
 from fastapi.middleware.cors import CORSMiddleware
@@ -100,3 +100,21 @@ def creer_paiement():
 
     except Exception as e : 
         return {"erreur" : str(e)}
+
+@app.post("/webhook")
+async def stripe_webhook(request: Request):
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    secret_webhook = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+    try:
+        event = strip.Webhook.construct_event(
+            payload, sig_header; secret_webhook
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Signature invalide") 
+
+    if event["type"] == "checkout.session.completed":
+        print("BINGO! Le serveur a recu la confirmation du paiement!")
+
+    return{"status": "success"}
