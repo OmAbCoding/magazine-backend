@@ -108,8 +108,8 @@ async def stripe_webhook(request: Request):
     secret_webhook = os.getenv('STRIPE_WEBHOOK_SECRET')
 
     try:
-        event = strip.Webhook.construct_event(
-            payload, sig_header; secret_webhook
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, secret_webhook
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail="Signature invalide") 
